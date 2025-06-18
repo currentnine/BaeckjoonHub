@@ -1,26 +1,26 @@
 #include <iostream>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 #include <algorithm>
-#include <set>
 
 using namespace std;
+unordered_set <string> s;
 
-int main()
-{
+int main(){
+    ios::sync_with_stdio(0);
+    cin.tie(0);
     int n;
     cin>>n;
 
-
-    set<string> people;
-
-    for(int i=0;i<n;i++) 
-    {
-        string name, action;
-        cin >> name >> action;
-        
-        if(action == "enter") people.insert(name);
-        else if (action == "leave") people.erase(name);
+    while(n--){
+        string name, log;
+        cin >> name >> log;
+        if(log == "enter") s.insert(name);
+        else s.erase(name);
+    
     }
-    for(auto it = people.rbegin(); it!= people.rend();it++) cout << *it << "\n";
+    vector<string> ans(s.begin(), s.end());
+    sort(ans.begin(), ans.end(), greater<string>());
+    for(auto x : ans) cout << x << "\n";
+
 }
