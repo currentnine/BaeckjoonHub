@@ -1,57 +1,70 @@
 #include <iostream>
-#define MAX 32
-
 using namespace std;
 
-int n, answer = 0;
-int arr[MAX][MAX];
-bool visited[MAX][MAX] = {false, };
-int dx[3] = {0, 1, 1};
-int dy[3] = {1, 0, 1};
+int board[17][17];
+int n;
+int answer = 0;
 
-void dfs(int x, int y, int dir){
-
-    if(x == n-1 && y == n -1){
+void dfs(int x, int y, int dir) {
+    if (x == n && y == n) {
         answer++;
         return;
     }
 
-    visited[x][y] = true;
-    for(int i = 0; i< 3; i++){
-        if(dir == 0 && i == 1) continue; // 파이프 가로, 세로 방향 이동
-        else if(dir == 1 && i == 0) continue; // 파이프 세로, 가로 방향 이동
-        else{
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            
-            if(nx < 0 || ny < 0 || nx >=n || ny >= n) continue;
+    // 1. 현재 방향이 가로(0) 또는 대각선(1)일 때
+    //    -> 오른쪽(가로) 이동 
+    if (dir == 0 || dir == 1) {
+        int nx = x;
+        int ny = y + 1;
 
-            if(i<2){ // 가로 세로 이동
-                if(!arr[nx][ny] && !visited[nx][ny]){
-                    dfs(nx,ny,i);
-                    visited[nx][ny] = false;
-                }
-            }
+        // 오른쪽 칸이 범위 안이고 빈칸이어야 이동 
+        if (ny <= n && board[nx][ny] == 0) {
+            dfs(nx, ny, 0);
+        }
+    }
 
-            else{ // 대갓ㄱ선
-                if(!arr[nx][ny] && !arr[nx-1][ny] && !arr[nx][ny-1] && !visited[nx][ny]){
-                    dfs(nx, ny, i);
-                    visited[nx][ny]  = false;
-                }
-            }
+    // 2. 현재 방향이 세로(2) 또는 대각선(1)일 때
+    //    -> 아래쪽(세로) 이동 
+    if (dir == 1 || dir == 2) {
+        int nx = x + 1;
+        int ny = y;
+
+        // 아래 칸이 범위 안이고 빈칸이어야 이동 가능
+        if (nx <= n && board[nx][ny] == 0) {
+            dfs(nx, ny, 2);
+        }
+    }
+
+    // 3. 모든 방향에서 대각선 이동 검토 가능
+    //    단, 오른쪽 / 아래 / 오른쪽아래 3칸이 모두 비어 있어야 함
+    {
+        int nx = x + 1;
+        int ny = y + 1;
+
+        if (nx <= n && ny <= n &&
+            board[x][y + 1] == 0 &&
+            board[x + 1][y] == 0 &&
+            board[nx][ny] == 0) {
+            dfs(nx, ny, 1);
         }
     }
 }
 
-int main(){
+int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
     cin >> n;
-    for(int i = 0; i < n; i++)
-        for(int j = 0; j <n; j++) cin >> arr[i][j];
 
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            cin >> board[i][j];
+        }
+    }
 
-    dfs(0,1,0);
+    // 시작 파이프: (1,1) ~ (1,2)
+    // 끝점 기준으로 보면 (1,2), 방향은 가로(0)
+    dfs(1, 2, 0);
+
     cout << answer;
-    
+    return 0;
 }
